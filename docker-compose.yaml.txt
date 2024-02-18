@@ -1,0 +1,41 @@
+version: '3.3'
+services:
+  db:
+    image: mariadb:10.2
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'l1jdb'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'l1j'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'l1j'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+    # <Port exposed> : < MySQL Port running inside container>
+    - '3306:3306'
+    expose:
+    # Opens port 3306 on the container
+    - '3306'
+    # Where our data will be persisted
+    volumes:
+    - type: volume
+      source: my-db
+      target: /var/lib/mysql
+    - type: bind
+      source: ./db
+      target: /docker-entrypoint-initdb.d
+  server:
+    image: l1j-en:latest
+    restart: always
+    ports:
+    - 2000:2000
+    expose:
+    - 2000
+    volumes:
+    - type: bind
+      source: ./config
+      target: /l1j/config
+# Names our volume
+volumes:
+  my-db: {}
